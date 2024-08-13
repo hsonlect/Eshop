@@ -83,9 +83,9 @@ namespace EshopApi.Presentation.Controllers
             });
         }
 
-        [HttpGet("addToCart")]
+        [HttpPost("addToCart")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> AddToCart(int productId)
+        public async Task<IActionResult> AddToCart(AddToCartRequest request)
         {
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
             if (username == null)
@@ -108,7 +108,7 @@ namespace EshopApi.Presentation.Controllers
             var addedItem = await _cartItemService.AddNewCartItemAsync(new CartItemNewDTO
             {
                 UserId = user.Id,
-                ProductId = productId
+                ProductId = request.Id
             });
             if (addedItem == null)
             {

@@ -44,6 +44,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/api/v1/access-denied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = false;
+        options.Cookie.SameSite = SameSiteMode.None; // or SameSiteMode.Strict / SameSiteMode.Lax
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
 builder.Services.AddAuthorizationBuilder()
@@ -77,22 +79,19 @@ builder.Services.AddSwaggerGen(c =>
 
 
 
-// builder.Services.AddCors(options =>
-//     {
-//         options.AddPolicy("AllowLocalhost", builder =>
-//         {
-//             builder.WithOrigins("http://localhost:5000")
-//                 .AllowAnyMethod()
-//                 .AllowAnyHeader()
-//                 .AllowCredentials()
-//                 .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
-//         });
-//     });
-// builder.Services.ConfigureApplicationCookie(options =>
-//     {
-//         options.Cookie.SameSite = SameSiteMode.None;
-//         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-//     });
+var AllowedOrigins = "AllowedcOrigins";
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy(AllowedOrigins, builder =>
+            {
+                builder.WithOrigins("http://localhost:4200")
+                       .AllowAnyHeader()
+                       .AllowAnyMethod()
+                       .AllowCredentials()
+                       .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+            });
+    });
+
 
 
 var app = builder.Build();
@@ -115,7 +114,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// app.UseCors("AllowLocalhost");
+app.UseCors(AllowedOrigins);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
