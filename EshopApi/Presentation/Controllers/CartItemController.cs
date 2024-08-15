@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using EshopApi.Domain.DTOs;
 using EshopApi.Application.Interfaces;
-using EshopApi.Presentation.Utils;
 
 namespace EshopApi.Presentation.Controllers
 {
@@ -24,7 +23,7 @@ namespace EshopApi.Presentation.Controllers
         public async Task<IActionResult> GetCartItem()
         {
             var cartItems = await _cartItemService.GetAllCartItemAsync();
-            return Ok(new ResponseMessage<ICollection<CartItemDTO>>()
+            return Ok(new ResponseWrapperDTO<ICollection<CartItemDTO>>()
             {
                 Status = true,
                 Message = "Get all cart items successfully",
@@ -38,7 +37,7 @@ namespace EshopApi.Presentation.Controllers
             var cartItem = await _cartItemService.GetCartItemByIdAsync(id);
             if (cartItem == null)
             {
-                return NotFound(new ResponseMessage<CartItemDTO>()
+                return NotFound(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Get cart item by id failed"
@@ -46,7 +45,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<CartItemDTO>()
+                return Ok(new ResponseWrapperDTO<CartItemDTO>()
                 {
                     Status = true,
                     Message = "Get cart item by id successfully",
@@ -61,7 +60,7 @@ namespace EshopApi.Presentation.Controllers
             var newCartItem = await _cartItemService.AddNewCartItemAsync(cartItem);
             if (newCartItem == null)
             {
-                return BadRequest(new ResponseMessage<CartItemDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Add new cart item failed"
@@ -69,7 +68,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<CartItemDTO>()
+                return Ok(new ResponseWrapperDTO<CartItemDTO>()
                 {
                     Status = true,
                     Message = "Add new cart item successfully!!!",
@@ -84,7 +83,7 @@ namespace EshopApi.Presentation.Controllers
             var updatedCartItem = await _cartItemService.UpdateCartItemAsync(cartItem);
             if (updatedCartItem == null)
             {
-                return BadRequest(new ResponseMessage<CartItemDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Update cart item failed"
@@ -92,7 +91,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<CartItemDTO>()
+                return Ok(new ResponseWrapperDTO<CartItemDTO>()
                 {
                     Status = true,
                     Message = "Update cart item successfully!!!",
@@ -107,7 +106,7 @@ namespace EshopApi.Presentation.Controllers
         {
             if ((id == 0) || (cartItem.Id == 0) || (id != cartItem.Id))
             {
-                return BadRequest(new ResponseMessage<CartItemDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Invalid cart item id"
@@ -116,7 +115,7 @@ namespace EshopApi.Presentation.Controllers
             var updatedCartItem = await _cartItemService.UpdateCartItemAsync(cartItem);
             if (updatedCartItem == null)
             {
-                return BadRequest(new ResponseMessage<CartItemDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Update cart item by id failed"
@@ -124,7 +123,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<CartItemDTO>()
+                return Ok(new ResponseWrapperDTO<CartItemDTO>()
                 {
                     Status = true,
                     Message = "Update cart item by id successfully!!!",
@@ -139,7 +138,7 @@ namespace EshopApi.Presentation.Controllers
             var result = await _cartItemService.DeleteCartItemAsync(id);
             if (result == false)
             {
-                return BadRequest(new ResponseMessage<CartItemDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Delete cart item by id failed"
@@ -147,7 +146,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<CartItemDTO>()
+                return Ok(new ResponseWrapperDTO<string>()
                 {
                     Status = true,
                     Message = "Delete cart item by id successfully!!!",

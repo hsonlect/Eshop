@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using EshopApi.Domain.DTOs;
 using EshopApi.Application.Interfaces;
-using EshopApi.Presentation.Utils;
 
 namespace EshopApi.Presentation.Controllers
 {
@@ -24,7 +23,7 @@ namespace EshopApi.Presentation.Controllers
         public async Task<IActionResult> GetProduct()
         {
             var products = await _productService.GetAllProductAsync();
-            return Ok(new ResponseMessage<ICollection<ProductDTO>>()
+            return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
             {
                 Status = true,
                 Message = "Get all products successfully",
@@ -38,7 +37,7 @@ namespace EshopApi.Presentation.Controllers
             var product = await _productService.GetProductByIdAsync(id);
             if (product == null)
             {
-                return NotFound(new ResponseMessage<ProductDTO>()
+                return NotFound(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Get product by id failed"
@@ -46,7 +45,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<ProductDTO>()
+                return Ok(new ResponseWrapperDTO<ProductDTO>()
                 {
                     Status = true,
                     Message = "Get product by id successfully",
@@ -62,7 +61,7 @@ namespace EshopApi.Presentation.Controllers
             var newProduct = await _productService.AddNewProductAsync(product);
             if (newProduct == null)
             {
-                return BadRequest(new ResponseMessage<ProductDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Add new product failed"
@@ -70,7 +69,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<ProductDTO>()
+                return Ok(new ResponseWrapperDTO<ProductDTO>()
                 {
                     Status = true,
                     Message = "Add new product successfully!!!",
@@ -86,7 +85,7 @@ namespace EshopApi.Presentation.Controllers
             var updatedProduct = await _productService.UpdateProductAsync(product);
             if (updatedProduct == null)
             {
-                return BadRequest(new ResponseMessage<ProductDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Update product failed"
@@ -94,7 +93,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<ProductDTO>()
+                return Ok(new ResponseWrapperDTO<ProductDTO>()
                 {
                     Status = true,
                     Message = "Update product successfully!!!",
@@ -110,7 +109,7 @@ namespace EshopApi.Presentation.Controllers
         {
             if ((id == 0) || (product.Id == 0) || (id != product.Id))
             {
-                return BadRequest(new ResponseMessage<ProductDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Invalid product id"
@@ -119,7 +118,7 @@ namespace EshopApi.Presentation.Controllers
             var updatedProduct = await _productService.UpdateProductAsync(product);
             if (updatedProduct == null)
             {
-                return BadRequest(new ResponseMessage<ProductDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Update product by id failed"
@@ -127,7 +126,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<ProductDTO>()
+                return Ok(new ResponseWrapperDTO<ProductDTO>()
                 {
                     Status = true,
                     Message = "Update product by id successfully!!!",
@@ -143,7 +142,7 @@ namespace EshopApi.Presentation.Controllers
             var result = await _productService.DeleteProductAsync(id);
             if (result == false)
             {
-                return BadRequest(new ResponseMessage<ProductDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Delete product by id failed"
@@ -151,7 +150,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<ProductDTO>()
+                return Ok(new ResponseWrapperDTO<string>()
                 {
                     Status = true,
                     Message = "Delete product by id successfully!!!",

@@ -1,6 +1,6 @@
-namespace EshopApi.Presentation.Utils
+namespace EshopApi.Domain.DTOs
 {
-    public class ResponseMessage<T>
+    public class ResponseWrapperDTO<T>
     {
         public bool Status { get; set; }
         public string? Message { get; set; }

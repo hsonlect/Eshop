@@ -1,6 +1,6 @@
-namespace EshopApi.Presentation.Utils
+namespace EshopApi.Domain.DTOs
 {
-    public class LoginResponse
+    public class LoginRespDTO
     {
         public required string Username { get; set; }
         public required string Role { get; set; }

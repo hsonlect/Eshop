@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using EshopApi.Domain.DTOs;
 using EshopApi.Application.Interfaces;
-using EshopApi.Presentation.Utils;
 
 namespace EshopApi.Presentation.Controllers
 {
@@ -24,7 +23,7 @@ namespace EshopApi.Presentation.Controllers
         public async Task<IActionResult> GetUser()
         {
             var users = await _userService.GetAllUserAsync();
-            return Ok(new ResponseMessage<ICollection<UserDTO>>()
+            return Ok(new ResponseWrapperDTO<ICollection<UserDTO>>()
             {
                 Status = true,
                 Message = "Get all users successfully",
@@ -38,7 +37,7 @@ namespace EshopApi.Presentation.Controllers
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound(new ResponseMessage<UserDTO>()
+                return NotFound(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Get user by id failed"
@@ -46,7 +45,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<UserDTO>()
+                return Ok(new ResponseWrapperDTO<UserDTO>()
                 {
                     Status = true,
                     Message = "Get user by id successfully",
@@ -61,7 +60,7 @@ namespace EshopApi.Presentation.Controllers
             var newUser = await _userService.AddNewUserAsync(user);
             if (newUser == null)
             {
-                return BadRequest(new ResponseMessage<UserDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Add new user failed"
@@ -69,7 +68,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<UserDTO>()
+                return Ok(new ResponseWrapperDTO<UserDTO>()
                 {
                     Status = true,
                     Message = "Add new user successfully!!!",
@@ -84,7 +83,7 @@ namespace EshopApi.Presentation.Controllers
             var updatedUser = await _userService.UpdateUserAsync(user);
             if (updatedUser == null)
             {
-                return BadRequest(new ResponseMessage<UserDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Update user failed"
@@ -92,7 +91,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<UserDTO>()
+                return Ok(new ResponseWrapperDTO<UserDTO>()
                 {
                     Status = true,
                     Message = "Update user successfully!!!",
@@ -107,7 +106,7 @@ namespace EshopApi.Presentation.Controllers
         {
             if ((id == 0) || (user.Id == 0) || (id != user.Id))
             {
-                return BadRequest(new ResponseMessage<UserDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Invalid user id"
@@ -116,7 +115,7 @@ namespace EshopApi.Presentation.Controllers
             var updatedUser = await _userService.UpdateUserAsync(user);
             if (updatedUser == null)
             {
-                return BadRequest(new ResponseMessage<UserDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Update user by id failed"
@@ -124,7 +123,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<UserDTO>()
+                return Ok(new ResponseWrapperDTO<UserDTO>()
                 {
                     Status = true,
                     Message = "Update user by id successfully!!!",
@@ -139,7 +138,7 @@ namespace EshopApi.Presentation.Controllers
             var updatedUser = await _userService.UpdateUserPasswordAsync(id, password);
             if (updatedUser == null)
             {
-                return BadRequest(new ResponseMessage<UserDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Update user password by id failed"
@@ -147,7 +146,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<UserDTO>()
+                return Ok(new ResponseWrapperDTO<UserDTO>()
                 {
                     Status = true,
                     Message = "Update user password by id successfully!!!",
@@ -162,7 +161,7 @@ namespace EshopApi.Presentation.Controllers
             var result = await _userService.DeleteUserAsync(id);
             if (result == false)
             {
-                return BadRequest(new ResponseMessage<UserDTO>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Delete user by id failed"
@@ -170,7 +169,7 @@ namespace EshopApi.Presentation.Controllers
             }
             else
             {
-                return Ok(new ResponseMessage<UserDTO>()
+                return Ok(new ResponseWrapperDTO<string>()
                 {
                     Status = true,
                     Message = "Delete user by id successfully!!!",

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using EshopApi.Domain.DTOs;
 using EshopApi.Application.Interfaces;
-using EshopApi.Presentation.Utils;
 
 namespace EshopApi.Presentation.Controllers
 {
@@ -22,20 +21,20 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Login(LoginReqDTO requestDto)
         {
             // if ((HttpContext.User.Identity != null) && HttpContext.User.Identity.IsAuthenticated)
             // {
-            //     return BadRequest(new ResponseMessage<string>
+            //     return BadRequest(new ResponseWrapperDTO<string>
             //     {
             //         Status = false,
             //         Message = "User was already logged in"
             //     });
             // }
-            var user = await _userService.AuthenticateUserAsync(request.Username, request.Password);
+            var user = await _userService.AuthenticateUserAsync(requestDto.Username, requestDto.Password);
             if (user == null)
             {
-                return Unauthorized(new ResponseMessage<string>
+                return Unauthorized(new ResponseWrapperDTO<string>
                 {
                     Status = false,
                     Message = "Invalid username or password"
@@ -54,11 +53,11 @@ namespace EshopApi.Presentation.Controllers
                 IsPersistent = true,
             };
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authProperties);
-            return Ok(new ResponseMessage<LoginResponse>
+            return Ok(new ResponseWrapperDTO<LoginRespDTO>
             {
                 Status = true,
                 Message = "Logged in successfully",
-                Data = new LoginResponse
+                Data = new LoginRespDTO
                 {
                     Username = user.Username,
                     Role = user.Role
@@ -71,14 +70,14 @@ namespace EshopApi.Presentation.Controllers
         {
             // if ((HttpContext.User.Identity == null) || !HttpContext.User.Identity.IsAuthenticated)
             // {
-            //     return BadRequest(new ResponseMessage<string>
+            //     return Ok(new ResponseWrapperDTO<string>
             //     {
-            //         Status = false,
-            //         Message = "User was already logged out"
+            //         Status = true,
+            //         Message = "User was not logged in or already logged out"
             //     });
             // }
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok(new ResponseMessage<string>()
+            return Ok(new ResponseWrapperDTO<string>()
             {
                 Status = true,
                 Message = "Logged out successfully"

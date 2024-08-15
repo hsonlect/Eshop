@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using EshopApi.Domain.DTOs;
 using EshopApi.Application.Interfaces;
-using EshopApi.Presentation.Utils;
 
 namespace EshopApi.Presentation.Controllers
 {
@@ -34,7 +33,7 @@ namespace EshopApi.Presentation.Controllers
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
             if (username == null)
             {
-                return NotFound(new ResponseMessage<ICollection<string>>()
+                return NotFound(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Invalid username",
@@ -43,7 +42,7 @@ namespace EshopApi.Presentation.Controllers
             var user = await _userservice.GetUserByUsernameAsync(username);
             if (user == null)
             {
-                return NotFound(new ResponseMessage<ICollection<string>>()
+                return NotFound(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Invalid username",
@@ -62,7 +61,7 @@ namespace EshopApi.Presentation.Controllers
                     }
                 }
             }
-            return Ok(new ResponseMessage<ICollection<ProductDTO>>()
+            return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
             {
                 Status = true,
                 Message = "Get all cart items successfully",
@@ -75,7 +74,7 @@ namespace EshopApi.Presentation.Controllers
         public async Task<IActionResult> GetCart(int userId)
         {
             var cartItems = await _cartService.GetAllCartItemByUserIdAsync(userId);
-            return Ok(new ResponseMessage<ICollection<CartItemDTO>>()
+            return Ok(new ResponseWrapperDTO<ICollection<CartItemDTO>>()
             {
                 Status = true,
                 Message = "Get all cart items by user id successfully",
@@ -85,12 +84,12 @@ namespace EshopApi.Presentation.Controllers
 
         [HttpPost("addToCart")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> AddToCart(AddToCartRequest request)
+        public async Task<IActionResult> AddToCart(AddToCartReqDTO requestDto)
         {
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
             if (username == null)
             {
-                return NotFound(new ResponseMessage<ICollection<string>>()
+                return NotFound(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Invalid username",
@@ -99,7 +98,7 @@ namespace EshopApi.Presentation.Controllers
             var user = await _userservice.GetUserByUsernameAsync(username);
             if (user == null)
             {
-                return NotFound(new ResponseMessage<ICollection<string>>()
+                return NotFound(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Invalid username",
@@ -108,17 +107,17 @@ namespace EshopApi.Presentation.Controllers
             var addedItem = await _cartItemService.AddNewCartItemAsync(new CartItemNewDTO
             {
                 UserId = user.Id,
-                ProductId = request.Id
+                ProductId = requestDto.Id
             });
             if (addedItem == null)
             {
-                return BadRequest(new ResponseMessage<string>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Add item to cart failed",
                 });
             }
-            return Ok(new ResponseMessage<string>()
+            return Ok(new ResponseWrapperDTO<string>()
             {
                 Status = true,
                 Message = "Add item to cart successfully",
@@ -132,7 +131,7 @@ namespace EshopApi.Presentation.Controllers
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
             if (username == null)
             {
-                return NotFound(new ResponseMessage<ICollection<string>>()
+                return NotFound(new ResponseWrapperDTO<ICollection<string>>()
                 {
                     Status = false,
                     Message = "Invalid username",
@@ -141,7 +140,7 @@ namespace EshopApi.Presentation.Controllers
             var user = await _userservice.GetUserByUsernameAsync(username);
             if (user == null)
             {
-                return NotFound(new ResponseMessage<ICollection<string>>()
+                return NotFound(new ResponseWrapperDTO<ICollection<string>>()
                 {
                     Status = false,
                     Message = "Invalid username",
@@ -150,13 +149,13 @@ namespace EshopApi.Presentation.Controllers
             var result = await _cartService.RemoveItemFromCartAsync(user.Id, productId);
             if (result == false)
             {
-                return BadRequest(new ResponseMessage<string>()
+                return BadRequest(new ResponseWrapperDTO<string>()
                 {
                     Status = false,
                     Message = "Remove item from cart failed",
                 });
             }
-            return Ok(new ResponseMessage<string>()
+            return Ok(new ResponseWrapperDTO<string>()
             {
                 Status = true,
                 Message = "Remove item from cart successfully",
