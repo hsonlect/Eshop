@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using EshopApi.Application.DTOs;
+using EshopApi.Domain.DTOs;
 using EshopApi.Application.Interfaces;
 using EshopApi.Presentation.Utils;
 

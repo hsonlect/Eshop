@@ -1,6 +1,6 @@
 using EshopApi.Domain.Entities;
+using EshopApi.Domain.DTOs;
 using EshopApi.Domain.Interfaces;
-using EshopApi.Application.DTOs;
 using EshopApi.Application.Interfaces;
 
 namespace EshopApi.Application.Services

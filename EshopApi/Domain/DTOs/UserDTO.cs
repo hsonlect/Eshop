@@ -1,4 +1,4 @@
-namespace EshopApi.Application.DTOs
+namespace EshopApi.Domain.DTOs
 {
     public class UserDTO
     {

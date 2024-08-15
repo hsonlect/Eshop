@@ -1,4 +1,4 @@
-using EshopApi.Application.DTOs;
+using EshopApi.Domain.DTOs;
 
 namespace EshopApi.Application.Interfaces
 {
