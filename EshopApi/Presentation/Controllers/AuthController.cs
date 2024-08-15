@@ -23,14 +23,6 @@ namespace EshopApi.Presentation.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginReqDTO requestDto)
         {
-            // if ((HttpContext.User.Identity != null) && HttpContext.User.Identity.IsAuthenticated)
-            // {
-            //     return BadRequest(new ResponseWrapperDTO<string>
-            //     {
-            //         Status = false,
-            //         Message = "User was already logged in"
-            //     });
-            // }
             var user = await _userService.AuthenticateUserAsync(requestDto.Username, requestDto.Password);
             if (user == null)
             {
@@ -68,14 +60,14 @@ namespace EshopApi.Presentation.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            // if ((HttpContext.User.Identity == null) || !HttpContext.User.Identity.IsAuthenticated)
-            // {
-            //     return Ok(new ResponseWrapperDTO<string>
-            //     {
-            //         Status = true,
-            //         Message = "User was not logged in or already logged out"
-            //     });
-            // }
+            if ((HttpContext.User.Identity == null) || !HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Ok(new ResponseWrapperDTO<string>
+                {
+                    Status = true,
+                    Message = "User was not logged in or already logged out"
+                });
+            }
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok(new ResponseWrapperDTO<string>()
             {

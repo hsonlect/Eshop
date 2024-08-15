@@ -44,7 +44,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/api/v1/access-denied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = false;
-        options.Cookie.SameSite = SameSiteMode.None; // or SameSiteMode.Strict / SameSiteMode.Lax
+        options.Cookie.HttpOnly = false;
+        options.Cookie.SameSite = SameSiteMode.None;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
