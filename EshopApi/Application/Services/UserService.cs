@@ -13,34 +13,34 @@ namespace EshopApi.Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task<ICollection<UserDTO>?> GetAllUserAsync()
+        public async Task<ICollection<UserDTO>?> GetAllUsersAsync()
         {
             var users = await _userRepository.GetAllAsync();
-            if (users == null)
+            if (users != null)
             {
-                return null;
+                return users.Select(u => new UserDTO
+                {
+                    Id = u.Id,
+                    Username = u.Username,
+                    Role = u.Role
+                }).ToList();
             }
-            return users.Select(u => new UserDTO
-            {
-                Id = u.Id,
-                Username = u.Username,
-                Role = u.Role
-            }).ToList();
+            return null;
         }
 
         public async Task<UserDTO?> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
+            if (user != null)
             {
-                return null;
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Role = user.Role
+                };
             }
-            return new UserDTO
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Role = user.Role
-            };
+            return null;
         }
 
         public async Task<UserDTO?> GetUserByUsernameAsync(string username)

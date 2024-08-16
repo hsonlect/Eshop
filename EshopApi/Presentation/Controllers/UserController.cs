@@ -22,7 +22,7 @@ namespace EshopApi.Presentation.Controllers
         [HttpGet("getUser")]
         public async Task<IActionResult> GetUser()
         {
-            var users = await _userService.GetAllUserAsync();
+            var users = await _userService.GetAllUsersAsync();
             return Ok(new ResponseWrapperDTO<ICollection<UserDTO>>()
             {
                 Status = true,
@@ -35,15 +35,7 @@ namespace EshopApi.Presentation.Controllers
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound(new ResponseWrapperDTO<string>()
-                {
-                    Status = false,
-                    Message = "Get user by id failed"
-                });
-            }
-            else
+            if (user != null)
             {
                 return Ok(new ResponseWrapperDTO<UserDTO>()
                 {
@@ -52,6 +44,11 @@ namespace EshopApi.Presentation.Controllers
                     Data = user
                 });
             }
+            return NotFound(new ResponseWrapperDTO<UserDTO>()
+            {
+                Status = false,
+                Message = "Get user by id failed"
+            });
         }
 
         [HttpPost("addUser")]

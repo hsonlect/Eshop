@@ -4,7 +4,7 @@ namespace EshopApi.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<ICollection<UserDTO>?> GetAllUserAsync();
+        Task<ICollection<UserDTO>?> GetAllUsersAsync();
         Task<UserDTO?> GetUserByIdAsync(int id);
         Task<UserDTO?> GetUserByUsernameAsync(string username);
         Task<UserDTO?> AddNewUserAsync(UserNewDTO user);

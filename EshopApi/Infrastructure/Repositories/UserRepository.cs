@@ -12,35 +12,34 @@ namespace EshopApi.Infrastructure.Repositories
         {
             _context = context;
         }
+
         public async Task<ICollection<User>?> GetAllAsync()
         {
             return await _context.Users.ToListAsync();
         }
+
         public async Task<User?> GetByIdAsync(int id)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
+
         public async Task<User?> GetByUsernameAsync(string username)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
+
         public async Task<User?> AddAsync(User user)
         {
             var existUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-            if (existUser != null)
+            if (existUser == null)
             {
-                return null;
+                _context.Users.Add(user);
+                var result = await _context.SaveChangesAsync();
+                return (result > 0) ? user : null;
             }
-            var newUser = new User()
-            {
-                Username = user.Username,
-                Role = user.Role,
-                Password = user.Password
-            };
-            _context.Users.Add(newUser);
-            var result = await _context.SaveChangesAsync();
-            return result >= 0 ? newUser : null;
+            return null;
         }
+
         public async Task<User?> UpdateAsync(User user)
         {
             var updatedUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
@@ -50,10 +49,11 @@ namespace EshopApi.Infrastructure.Repositories
                 updatedUser.Role = user.Role;
                 updatedUser.Password = user.Password;
                 var result = await _context.SaveChangesAsync();
-                return result >= 0 ? updatedUser : null;
+                return (result > 0) ? updatedUser : null;
             }
             return null;
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var removedUser = await _context.Users.FindAsync(id);
@@ -61,7 +61,7 @@ namespace EshopApi.Infrastructure.Repositories
             {
                 _context.Users.Remove(removedUser);
                 var result = await _context.SaveChangesAsync();
-                return result >= 0;
+                return result > 0;
             }
             return false;
         }
