@@ -30,14 +30,18 @@ namespace EshopApi.Infrastructure.Repositories
 
         public async Task<User?> AddAsync(User user)
         {
-            var existUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-            if (existUser == null)
-            {
-                _context.Users.Add(user);
-                var result = await _context.SaveChangesAsync();
-                return (result > 0) ? user : null;
-            }
-            return null;
+            _context.Users.Add(user);
+            var result = await _context.SaveChangesAsync();
+            return (result > 0) ? user : null;
+
+            // var existUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
+            // if (existUser == null)
+            // {
+            //     _context.Users.Add(user);
+            //     var result = await _context.SaveChangesAsync();
+            //     return (result > 0) ? user : null;
+            // }
+            // return null;
         }
 
         public async Task<User?> UpdateAsync(User user)

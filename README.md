@@ -26,8 +26,8 @@ dotnet add package Asp.Versioning.Mvc.ApiExplorer
 dotnet add package DotNetEnv
 # Update code: Domain/Infrastructure/Application/API
 # Follow template https://github.com/nhonvo/clean-architecture-net-8.0
-dotnet tool install --global  dotnet-ef
-dotnet tool update --global  dotnet-ef
+dotnet tool install --global dotnet-ef
+dotnet tool update --global dotnet-ef
 # dotnet ef database drop
 # dotnet ef migrations remove
 dotnet ef migrations add InitialCreate -o Infrastructure/Migrations
