@@ -12,49 +12,53 @@ namespace EshopApi.Infrastructure.Repositories
         {
             _context = context;
         }
+
         public async Task<ICollection<Product>?> GetAllAsync()
         {
             return await _context.Products.ToListAsync();
         }
+
         public async Task<Product?> GetByIdAsync(int id)
         {
-            return await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Products.FindAsync(id);
         }
+
+        public async Task<Product?> GetByNameAsync(string name)
+        {
+            return await _context.Products.FirstOrDefaultAsync(p => p.Name == name);
+        }
+
         public async Task<Product?> AddAsync(Product product)
         {
-            var newProduct = new Product()
-            {
-                Name = product.Name,
-                Price = product.Price,
-                Description = product.Description
-            };
-            _context.Products.Add(newProduct);
+            _context.Products.Add(product);
             var result = await _context.SaveChangesAsync();
-            return result >= 0 ? newProduct : null;
+            return (result > 0) ? product : null;
         }
+
         public async Task<Product?> UpdateAsync(Product product)
         {
-            var updatedProduct = await _context.Products.FirstOrDefaultAsync(p => p.Id == product.Id);
-            if (updatedProduct != null)
+            var updatedProduct = await _context.Products.FindAsync(product.Id);
+            if (updatedProduct == null)
             {
-                updatedProduct.Name = product.Name;
-                updatedProduct.Price = product.Price;
-                updatedProduct.Description = product.Description;
-                var result = await _context.SaveChangesAsync();
-                return result >= 0 ? updatedProduct : null;
+                return null;
             }
-            return null;
+            updatedProduct.Name = product.Name;
+            updatedProduct.Price = product.Price;
+            updatedProduct.Description = product.Description;
+            var result = await _context.SaveChangesAsync();
+            return (result > 0) ? updatedProduct : null;
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var removedProduct = await _context.Products.FindAsync(id);
-            if (removedProduct != null)
+            if (removedProduct == null)
             {
-                _context.Products.Remove(removedProduct);
-                var result = await _context.SaveChangesAsync();
-                return result >= 0;
+                return false;
             }
-            return false;
+            _context.Products.Remove(removedProduct);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
     }
 }

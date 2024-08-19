@@ -6,6 +6,8 @@ namespace EshopApi.Domain.Interfaces
     {
         Task<ICollection<CartItem>?> GetAllAsync();
         Task<CartItem?> GetByIdAsync(int id);
+        Task<ICollection<CartItem>?> GetByUserIdAsync(int userId);
+        Task<CartItem?> GetByUserIdAndProductIdAsync(int userId, int productId);
         Task<CartItem?> AddAsync(CartItem cartItem);
         Task<CartItem?> UpdateAsync(CartItem cartItem);
         Task<bool> DeleteAsync(int id);

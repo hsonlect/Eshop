@@ -12,47 +12,57 @@ namespace EshopApi.Infrastructure.Repositories
         {
             _context = context;
         }
+
         public async Task<ICollection<CartItem>?> GetAllAsync()
         {
             return await _context.CartItems.ToListAsync();
         }
+
         public async Task<CartItem?> GetByIdAsync(int id)
         {
-            return await _context.CartItems.FirstOrDefaultAsync(ci => ci.Id == id);
+            return await _context.CartItems.FindAsync(id);
         }
+
+        public async Task<ICollection<CartItem>?> GetByUserIdAsync(int userId)
+        {
+            return await _context.CartItems.Where(ci => ci.UserId == userId).ToListAsync();
+        }
+
+        public async Task<CartItem?> GetByUserIdAndProductIdAsync(int userId, int productId)
+        {
+            return await _context.CartItems.Where(ci => ci.UserId == userId && ci.ProductId == productId).FirstOrDefaultAsync();
+        }
+
         public async Task<CartItem?> AddAsync(CartItem cartItem)
         {
-            var newCartItem = new CartItem()
-            {
-                UserId = cartItem.UserId,
-                ProductId = cartItem.ProductId
-            };
-            _context.CartItems.Add(newCartItem);
+            _context.CartItems.Add(cartItem);
             var result = await _context.SaveChangesAsync();
-            return result >= 0 ? newCartItem : null;
+            return (result > 0) ? cartItem : null;
         }
+
         public async Task<CartItem?> UpdateAsync(CartItem cartItem)
         {
-            var updatedCartItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.Id == cartItem.Id);
-            if (updatedCartItem != null)
+            var updatedCartItem = await _context.CartItems.FindAsync(cartItem.Id);
+            if (updatedCartItem == null)
             {
-                updatedCartItem.UserId = cartItem.UserId;
-                updatedCartItem.ProductId = cartItem.ProductId;
-                var result = await _context.SaveChangesAsync();
-                return result >= 0 ? updatedCartItem : null;
+                return null;
             }
-            return null;
+            updatedCartItem.UserId = cartItem.UserId;
+            updatedCartItem.ProductId = cartItem.ProductId;
+            var result = await _context.SaveChangesAsync();
+            return (result > 0) ? updatedCartItem : null;
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             var removedCartItem = await _context.CartItems.FindAsync(id);
-            if (removedCartItem != null)
+            if (removedCartItem == null)
             {
-                _context.CartItems.Remove(removedCartItem);
-                var result = await _context.SaveChangesAsync();
-                return result >= 0;
+                return false;
             }
-            return false;
+            _context.CartItems.Remove(removedCartItem);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
     }
 }

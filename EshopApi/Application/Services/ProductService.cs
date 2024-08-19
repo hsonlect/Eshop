@@ -8,34 +8,9 @@ namespace EshopApi.Application.Services
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
-        public ProductService(IProductRepository productRepository)
-        {
-            _productRepository = productRepository;
-        }
 
-        public async Task<ICollection<ProductDTO>?> GetAllProductAsync()
+        private ProductDTO ToProductDTO(Product product)
         {
-            var products = await _productRepository.GetAllAsync();
-            if (products == null)
-            {
-                return null;
-            }
-            return products.Select(p => new ProductDTO
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                Description = p.Description
-            }).ToList();
-        }
-
-        public async Task<ProductDTO?> GetProductByIdAsync(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return null;
-            }
             return new ProductDTO
             {
                 Id = product.Id,
@@ -45,49 +20,53 @@ namespace EshopApi.Application.Services
             };
         }
 
-        public async Task<ProductDTO?> AddNewProductAsync(ProductNewDTO product)
+        public ProductService(IProductRepository productRepository)
         {
-            var newProduct = await _productRepository.AddAsync(new Product()
-            {
-                Name = product.Name,
-                Price = product.Price,
-                Description = product.Description
-            });
-            if (newProduct == null)
-            {
-                return null;
-            }
-            return new ProductDTO
-            {
-                Id = newProduct.Id,
-                Name = newProduct.Name,
-                Price = newProduct.Price,
-                Description = newProduct.Description
-            };
+            _productRepository = productRepository;
         }
 
-        public async Task<ProductDTO?> UpdateProductAsync(ProductDTO product)
+        public async Task<ICollection<ProductDTO>?> GetAllProductsAsync()
         {
-            var oldProduct = await _productRepository.GetByIdAsync(product.Id);
-            if (oldProduct == null)
+            var products = await _productRepository.GetAllAsync();
+            return products?.Select(ToProductDTO).ToList();
+        }
+
+        public async Task<ProductDTO?> GetProductByIdAsync(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            return (product != null) ? ToProductDTO(product) : null;
+        }
+
+        public async Task<ProductDTO?> GetProductByNameAsync(string name)
+        {
+            var product = await _productRepository.GetByNameAsync(name);
+            return (product != null) ? ToProductDTO(product) : null;
+        }
+
+        public async Task<ProductDTO?> AddNewProductAsync(ProductNewDTO productNewDto)
+        {
+            var addedProduct = new Product
             {
-                return null;
-            }
-            oldProduct.Name = product.Name;
-            oldProduct.Price = product.Price;
-            oldProduct.Description = product.Description;
-            var newProduct = await _productRepository.UpdateAsync(oldProduct);
-            if (newProduct == null)
-            {
-                return null;
-            }
-            return new ProductDTO
-            {
-                Id = newProduct.Id,
-                Name = newProduct.Name,
-                Price = newProduct.Price,
-                Description = newProduct.Description
+                Name = productNewDto.Name,
+                Price = productNewDto.Price,
+                Description = productNewDto.Description
             };
+            addedProduct = await _productRepository.AddAsync(addedProduct);
+            return (addedProduct != null) ? ToProductDTO(addedProduct) : null;
+        }
+
+        public async Task<ProductDTO?> UpdateProductAsync(ProductDTO productDto)
+        {
+            var updatedProduct = await _productRepository.GetByIdAsync(productDto.Id);
+            if (updatedProduct == null)
+            {
+                return null;
+            }
+            updatedProduct.Name = productDto.Name;
+            updatedProduct.Price = productDto.Price;
+            updatedProduct.Description = productDto.Description;
+            updatedProduct = await _productRepository.UpdateAsync(updatedProduct);
+            return (updatedProduct != null) ? ToProductDTO(updatedProduct) : null;
         }
 
         public async Task<bool> DeleteProductAsync(int id)

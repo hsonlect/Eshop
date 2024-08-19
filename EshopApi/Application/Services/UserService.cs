@@ -8,6 +8,17 @@ namespace EshopApi.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+
+        private UserDTO ToUserDTO(User user)
+        {
+            return new UserDTO
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Role = user.Role
+            };
+        }
+
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
@@ -16,129 +27,71 @@ namespace EshopApi.Application.Services
         public async Task<ICollection<UserDTO>?> GetAllUsersAsync()
         {
             var users = await _userRepository.GetAllAsync();
-            if (users != null)
-            {
-                return users.Select(u => new UserDTO
-                {
-                    Id = u.Id,
-                    Username = u.Username,
-                    Role = u.Role
-                }).ToList();
-            }
-            return null;
+            return users?.Select(ToUserDTO).ToList();
         }
 
         public async Task<UserDTO?> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user != null)
-            {
-                return new UserDTO
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    Role = user.Role
-                };
-            }
-            return null;
+            return (user != null) ? ToUserDTO(user) : null;
         }
 
         public async Task<UserDTO?> GetUserByUsernameAsync(string username)
         {
             var user = await _userRepository.GetByUsernameAsync(username);
-            if (user == null)
-            {
-                return null;
-            }
-            return new UserDTO
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Role = user.Role
-            };
+            return (user != null) ? ToUserDTO(user) : null;
         }
 
-        public async Task<UserDTO?> AddNewUserAsync(UserNewDTO user)
-        {
-            var newUser = await _userRepository.AddAsync(new User()
-            {
-                Username = user.Username,
-                Role = user.Role,
-                Password = user.Password
-            });
-            if (newUser == null)
-            {
-                return null;
-            }
-            return new UserDTO
-            {
-                Id = newUser.Id,
-                Username = newUser.Username,
-                Role = newUser.Role
-            };
-        }
-
-        public async Task<UserDTO?> UpdateUserAsync(UserDTO user)
-        {
-            var oldUser = await _userRepository.GetByIdAsync(user.Id);
-            if (oldUser == null)
-            {
-                return null;
-            }
-            oldUser.Username = user.Username;
-            oldUser.Role = user.Role;
-            var newUser = await _userRepository.UpdateAsync(oldUser);
-            if (newUser == null)
-            {
-                return null;
-            }
-            return new UserDTO
-            {
-                Id = newUser.Id,
-                Username = newUser.Username,
-                Role = newUser.Role
-            };
-        }
-
-        public async Task<UserDTO?> UpdateUserPasswordAsync(int id, string password)
-        {
-            var oldUser = await _userRepository.GetByIdAsync(id);
-            if (oldUser == null)
-            {
-                return null;
-            }
-            oldUser.Password = password;
-            var newUser = await _userRepository.UpdateAsync(oldUser);
-            if (newUser == null)
-            {
-                return null;
-            }
-            return new UserDTO
-            {
-                Id = newUser.Id,
-                Username = newUser.Username,
-                Role = newUser.Role
-            };
-        }
-
-        public async Task<bool> DeleteUserAsync(int id)
-        {
-            return await _userRepository.DeleteAsync(id);
-        }
-
-        public async Task<UserDTO?> AuthenticateUserAsync(string username, string password)
+        public async Task<UserDTO?> GetUserByUsernameAndPasswordAsync(string username, string password)
         {
             var user = await _userRepository.GetByUsernameAsync(username);
             if ((user == null) || (user.Password != password))
             {
                 return null;
             }
-            return new UserDTO
+            return ToUserDTO(user);
+        }
+
+        public async Task<UserDTO?> AddNewUserAsync(UserNewDTO userNewDto)
+        {
+            var addedUser = new User
             {
-                Id = user.Id,
-                Username = user.Username,
-                Role = user.Role
+                Username = userNewDto.Username,
+                Role = userNewDto.Role,
+                Password = userNewDto.Password
             };
+            addedUser = await _userRepository.AddAsync(addedUser);
+            return (addedUser != null) ? ToUserDTO(addedUser) : null;
+        }
+
+        public async Task<UserDTO?> UpdateUserAsync(UserDTO userDto)
+        {
+            var updatedUser = await _userRepository.GetByIdAsync(userDto.Id);
+            if (updatedUser == null)
+            {
+                return null;
+            }
+            updatedUser.Username = userDto.Username;
+            updatedUser.Role = userDto.Role;
+            updatedUser = await _userRepository.UpdateAsync(updatedUser);
+            return (updatedUser != null) ? ToUserDTO(updatedUser) : null;
+        }
+
+        public async Task<UserDTO?> UpdateUserPasswordAsync(int id, string password)
+        {
+            var updatedUser = await _userRepository.GetByIdAsync(id);
+            if (updatedUser == null)
+            {
+                return null;
+            }
+            updatedUser.Password = password;
+            updatedUser = await _userRepository.UpdateAsync(updatedUser);
+            return (updatedUser != null) ? ToUserDTO(updatedUser) : null;
+        }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            return await _userRepository.DeleteAsync(id);
         }
     }
 }

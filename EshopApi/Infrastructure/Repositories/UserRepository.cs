@@ -20,7 +20,7 @@ namespace EshopApi.Infrastructure.Repositories
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.FindAsync(id);
         }
 
         public async Task<User?> GetByUsernameAsync(string username)
@@ -33,41 +33,32 @@ namespace EshopApi.Infrastructure.Repositories
             _context.Users.Add(user);
             var result = await _context.SaveChangesAsync();
             return (result > 0) ? user : null;
-
-            // var existUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
-            // if (existUser == null)
-            // {
-            //     _context.Users.Add(user);
-            //     var result = await _context.SaveChangesAsync();
-            //     return (result > 0) ? user : null;
-            // }
-            // return null;
         }
 
         public async Task<User?> UpdateAsync(User user)
         {
-            var updatedUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-            if (updatedUser != null)
+            var updatedUser = await _context.Users.FindAsync(user.Id);
+            if (updatedUser == null)
             {
-                updatedUser.Username = user.Username;
-                updatedUser.Role = user.Role;
-                updatedUser.Password = user.Password;
-                var result = await _context.SaveChangesAsync();
-                return (result > 0) ? updatedUser : null;
+                return null;
             }
-            return null;
+            updatedUser.Username = user.Username;
+            updatedUser.Role = user.Role;
+            updatedUser.Password = user.Password;
+            var result = await _context.SaveChangesAsync();
+            return (result > 0) ? updatedUser : null;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
             var removedUser = await _context.Users.FindAsync(id);
-            if (removedUser != null)
+            if (removedUser == null)
             {
-                _context.Users.Remove(removedUser);
-                var result = await _context.SaveChangesAsync();
-                return result > 0;
+                return false;
             }
-            return false;
+            _context.Users.Remove(removedUser);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
     }
 }

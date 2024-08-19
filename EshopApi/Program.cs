@@ -28,7 +28,6 @@ builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICartItemService, CartItemService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddControllers();

@@ -6,6 +6,7 @@ namespace EshopApi.Domain.Interfaces
     {
         Task<ICollection<Product>?> GetAllAsync();
         Task<Product?> GetByIdAsync(int id);
+        Task<Product?> GetByNameAsync(string name);
         Task<Product?> AddAsync(Product product);
         Task<Product?> UpdateAsync(Product product);
         Task<bool> DeleteAsync(int id);

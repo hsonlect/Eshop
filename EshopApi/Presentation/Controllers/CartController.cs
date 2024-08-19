@@ -15,15 +15,13 @@ namespace EshopApi.Presentation.Controllers
     public class CartController : ControllerBase
     {
         private readonly IUserService _userservice;
-        private readonly ICartService _cartService;
-        private readonly ICartItemService _cartItemService;
         private readonly IProductService _productService;
-        public CartController(ICartService cartService, IUserService userservice, ICartItemService cartItemService, IProductService productService)
+        private readonly ICartService _cartService;
+        public CartController(IUserService userservice, IProductService productService, ICartService cartService)
         {
             _userservice = userservice;
-            _cartService = cartService;
-            _cartItemService = cartItemService;
             _productService = productService;
+            _cartService = cartService;
         }
 
         [HttpGet("getCart")]
@@ -48,7 +46,7 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Invalid username",
                 });
             }
-            var cartItems = await _cartService.GetAllCartItemByUserIdAsync(user.Id);
+            var cartItems = await _cartService.GetCartItemByUserIdAsync(user.Id);
             var products = new List<ProductDTO>();
             if (cartItems != null)
             {
@@ -73,7 +71,7 @@ namespace EshopApi.Presentation.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetCart(int userId)
         {
-            var cartItems = await _cartService.GetAllCartItemByUserIdAsync(userId);
+            var cartItems = await _cartService.GetCartItemByUserIdAsync(userId);
             return Ok(new ResponseWrapperDTO<ICollection<CartItemDTO>>()
             {
                 Status = true,
@@ -104,7 +102,7 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Invalid username",
                 });
             }
-            var addedItem = await _cartItemService.AddNewCartItemAsync(new CartItemNewDTO
+            var addedItem = await _cartService.AddNewCartItemAsync(new CartItemNewDTO
             {
                 UserId = user.Id,
                 ProductId = requestDto.Id
@@ -124,9 +122,9 @@ namespace EshopApi.Presentation.Controllers
             });
         }
 
-        [HttpGet("removeFromCart")]
+        [HttpPost("removeFromCart")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> RemoveFromCart(int productId)
+        public async Task<IActionResult> RemoveFromCart(RemoveFromCartReqDTO requestDto)
         {
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
             if (username == null)
@@ -146,7 +144,8 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Invalid username",
                 });
             }
-            var result = await _cartService.RemoveItemFromCartAsync(user.Id, productId);
+            var removedItem = _cartService.GetCartItemByUserIdAndProductIdAsync(user.Id, requestDto.Id);
+            var result = await _cartService.DeleteCartItemAsync(removedItem.Id);
             if (result == false)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()

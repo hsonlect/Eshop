@@ -22,7 +22,7 @@ namespace EshopApi.Presentation.Controllers
         [HttpGet("getProduct")]
         public async Task<IActionResult> GetProduct()
         {
-            var products = await _productService.GetAllProductAsync();
+            var products = await _productService.GetAllProductsAsync();
             return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
             {
                 Status = true,
