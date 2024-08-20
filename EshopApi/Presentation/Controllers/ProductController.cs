@@ -43,23 +43,20 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Get product by id failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<ProductDTO>()
             {
-                return Ok(new ResponseWrapperDTO<ProductDTO>()
-                {
-                    Status = true,
-                    Message = "Get product by id successfully",
-                    Data = product
-                });
-            }
+                Status = true,
+                Message = "Get product by id successfully",
+                Data = product
+            });
         }
 
         [HttpPost("addProduct")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> AddProduct(ProductNewDTO product)
+        public async Task<IActionResult> AddProduct(ProductNewDTO productNewDto)
         {
-            var newProduct = await _productService.AddNewProductAsync(product);
-            if (newProduct == null)
+            var addedProduct = await _productService.AddNewProductAsync(productNewDto);
+            if (addedProduct == null)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
                 {
@@ -67,22 +64,19 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Add new product failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<ProductDTO>()
             {
-                return Ok(new ResponseWrapperDTO<ProductDTO>()
-                {
-                    Status = true,
-                    Message = "Add new product successfully!!!",
-                    Data = newProduct
-                });
-            }
+                Status = true,
+                Message = "Add new product successfully!!!",
+                Data = addedProduct
+            });
         }
 
         [HttpPut("updateProduct")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> UpdateProduct(ProductDTO product)
+        public async Task<IActionResult> UpdateProduct(ProductDTO productDto)
         {
-            var updatedProduct = await _productService.UpdateProductAsync(product);
+            var updatedProduct = await _productService.UpdateProductAsync(productDto);
             if (updatedProduct == null)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
@@ -91,23 +85,20 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Update product failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<ProductDTO>()
             {
-                return Ok(new ResponseWrapperDTO<ProductDTO>()
-                {
-                    Status = true,
-                    Message = "Update product successfully!!!",
-                    Data = updatedProduct
-                });
-            }
+                Status = true,
+                Message = "Update product successfully!!!",
+                Data = updatedProduct
+            });
         }
 
         [HttpPut("updateProduct/{id}")]
         [MapToApiVersion("2.0")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> UpdateProduct(int id, ProductDTO product)
+        public async Task<IActionResult> UpdateProduct(int id, ProductDTO productDto)
         {
-            if ((id == 0) || (product.Id == 0) || (id != product.Id))
+            if ((id == 0) || (productDto.Id == 0) || (id != productDto.Id))
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
                 {
@@ -115,7 +106,7 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Invalid product id"
                 });
             }
-            var updatedProduct = await _productService.UpdateProductAsync(product);
+            var updatedProduct = await _productService.UpdateProductAsync(productDto);
             if (updatedProduct == null)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
@@ -124,15 +115,12 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Update product by id failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<ProductDTO>()
             {
-                return Ok(new ResponseWrapperDTO<ProductDTO>()
-                {
-                    Status = true,
-                    Message = "Update product by id successfully!!!",
-                    Data = updatedProduct
-                });
-            }
+                Status = true,
+                Message = "Update product by id successfully!!!",
+                Data = updatedProduct
+            });
         }
 
         [HttpDelete("deleteProduct/{id}")]
@@ -148,14 +136,11 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Delete product by id failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<string>()
             {
-                return Ok(new ResponseWrapperDTO<string>()
-                {
-                    Status = true,
-                    Message = "Delete product by id successfully!!!",
-                });
-            }
+                Status = true,
+                Message = "Delete product by id successfully!!!",
+            });
         }
     }
 }

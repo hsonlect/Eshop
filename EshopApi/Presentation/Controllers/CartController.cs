@@ -144,7 +144,15 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Invalid username",
                 });
             }
-            var removedItem = _cartService.GetCartItemByUserIdAndProductIdAsync(user.Id, requestDto.Id);
+            var removedItem = await _cartService.GetCartItemByUserIdAndProductIdAsync(user.Id, requestDto.Id);
+            if (removedItem == null)
+            {
+                return NotFound(new ResponseWrapperDTO<ICollection<string>>()
+                {
+                    Status = false,
+                    Message = "Invalid item",
+                });
+            }
             var result = await _cartService.DeleteCartItemAsync(removedItem.Id);
             if (result == false)
             {

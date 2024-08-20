@@ -35,27 +35,27 @@ namespace EshopApi.Presentation.Controllers
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
-            if (user != null)
+            if (user == null)
             {
-                return Ok(new ResponseWrapperDTO<UserDTO>()
+                return NotFound(new ResponseWrapperDTO<UserDTO>()
                 {
-                    Status = true,
-                    Message = "Get user by id successfully",
-                    Data = user
+                    Status = false,
+                    Message = "Get user by id failed"
                 });
             }
-            return NotFound(new ResponseWrapperDTO<UserDTO>()
+            return Ok(new ResponseWrapperDTO<UserDTO>()
             {
-                Status = false,
-                Message = "Get user by id failed"
+                Status = true,
+                Message = "Get user by id successfully",
+                Data = user
             });
         }
 
         [HttpPost("addUser")]
-        public async Task<IActionResult> AddUser(UserNewDTO user)
+        public async Task<IActionResult> AddUser(UserNewDTO userNewDto)
         {
-            var newUser = await _userService.AddNewUserAsync(user);
-            if (newUser == null)
+            var addedUser = await _userService.AddNewUserAsync(userNewDto);
+            if (addedUser == null)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
                 {
@@ -63,21 +63,18 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Add new user failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<UserDTO>()
             {
-                return Ok(new ResponseWrapperDTO<UserDTO>()
-                {
-                    Status = true,
-                    Message = "Add new user successfully!!!",
-                    Data = newUser
-                });
-            }
+                Status = true,
+                Message = "Add new user successfully!!!",
+                Data = addedUser
+            });
         }
 
         [HttpPut("updateUser")]
-        public async Task<IActionResult> UpdateUser(UserDTO user)
+        public async Task<IActionResult> UpdateUser(UserDTO userDto)
         {
-            var updatedUser = await _userService.UpdateUserAsync(user);
+            var updatedUser = await _userService.UpdateUserAsync(userDto);
             if (updatedUser == null)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
@@ -86,22 +83,19 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Update user failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<UserDTO>()
             {
-                return Ok(new ResponseWrapperDTO<UserDTO>()
-                {
-                    Status = true,
-                    Message = "Update user successfully!!!",
-                    Data = updatedUser
-                });
-            }
+                Status = true,
+                Message = "Update user successfully!!!",
+                Data = updatedUser
+            });
         }
 
         [HttpPut("updateUser/{id}")]
         [MapToApiVersion("2.0")]
-        public async Task<IActionResult> UpdateUser(int id, UserDTO user)
+        public async Task<IActionResult> UpdateUser(int id, UserDTO userDto)
         {
-            if ((id == 0) || (user.Id == 0) || (id != user.Id))
+            if ((id == 0) || (userDto.Id == 0) || (id != userDto.Id))
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
                 {
@@ -109,7 +103,7 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Invalid user id"
                 });
             }
-            var updatedUser = await _userService.UpdateUserAsync(user);
+            var updatedUser = await _userService.UpdateUserAsync(userDto);
             if (updatedUser == null)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
@@ -118,21 +112,18 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Update user by id failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<UserDTO>()
             {
-                return Ok(new ResponseWrapperDTO<UserDTO>()
-                {
-                    Status = true,
-                    Message = "Update user by id successfully!!!",
-                    Data = updatedUser
-                });
-            }
+                Status = true,
+                Message = "Update user by id successfully!!!",
+                Data = updatedUser
+            });
         }
 
-        [HttpPut("updateUserPassword/{id}")]
-        public async Task<IActionResult> UpdateUserPassword(int id, string password)
+        [HttpPut("updateUserPassword")]
+        public async Task<IActionResult> UpdateUserPassword(UpdatePasswordReqDTO requestDto)
         {
-            var updatedUser = await _userService.UpdateUserPasswordAsync(id, password);
+            var updatedUser = await _userService.UpdateUserPasswordAsync(requestDto.UserId, requestDto.Password);
             if (updatedUser == null)
             {
                 return BadRequest(new ResponseWrapperDTO<string>()
@@ -141,15 +132,12 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Update user password by id failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<UserDTO>()
             {
-                return Ok(new ResponseWrapperDTO<UserDTO>()
-                {
-                    Status = true,
-                    Message = "Update user password by id successfully!!!",
-                    Data = updatedUser
-                });
-            }
+                Status = true,
+                Message = "Update user password by id successfully!!!",
+                Data = updatedUser
+            });
         }
 
         [HttpDelete("deleteUser/{id}")]
@@ -164,14 +152,11 @@ namespace EshopApi.Presentation.Controllers
                     Message = "Delete user by id failed"
                 });
             }
-            else
+            return Ok(new ResponseWrapperDTO<string>()
             {
-                return Ok(new ResponseWrapperDTO<string>()
-                {
-                    Status = true,
-                    Message = "Delete user by id successfully!!!",
-                });
-            }
+                Status = true,
+                Message = "Delete user by id successfully!!!",
+            });
         }
     }
 }
