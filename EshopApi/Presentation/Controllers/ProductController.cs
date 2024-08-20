@@ -19,14 +19,39 @@ namespace EshopApi.Presentation.Controllers
             _productService = productService;
         }
 
+        // [HttpGet("getProduct")]
+        // public async Task<IActionResult> GetProduct()
+        // {
+        //     var products = await _productService.GetAllProductsAsync();
+        //     return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
+        //     {
+        //         Status = true,
+        //         Message = "Get all products successfully!!!",
+        //         Data = products
+        //     });
+        // }
+
         [HttpGet("getProduct")]
-        public async Task<IActionResult> GetProduct()
+        public async Task<IActionResult> GetProduct([FromQuery] int? pageId = null, [FromQuery] int? pageSize = null)
         {
-            var products = await _productService.GetAllProductsAsync();
+            var products = await _productService.GetAllProductsAsync() ?? [];
+            if (pageId.HasValue && pageSize.HasValue)
+            {
+                var pagedProducts = products
+                    .Skip((pageId.Value - 1) * pageSize.Value)
+                    .Take(pageSize.Value)
+                    .ToList();
+                return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
+                {
+                    Status = true,
+                    Message = "Get product by page id successfully!!!",
+                    Data = pagedProducts
+                });
+            }
             return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
             {
                 Status = true,
-                Message = "Get all products successfully",
+                Message = "Get all products successfully!!!",
                 Data = products
             });
         }
@@ -46,8 +71,25 @@ namespace EshopApi.Presentation.Controllers
             return Ok(new ResponseWrapperDTO<ProductDTO>()
             {
                 Status = true,
-                Message = "Get product by id successfully",
+                Message = "Get product by id successfully!!!",
                 Data = product
+            });
+        }
+
+        [HttpGet("getProduct/page/{pageId}")]
+        public async Task<IActionResult> GetProductByPage(int pageId)
+        {
+            const int pageSize = 5;
+            var products = await _productService.GetAllProductsAsync() ?? [];
+            var pagedProducts = products
+                .Skip((pageId - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
+            {
+                Status = true,
+                Message = "Get product by page id successfully!!!",
+                Data = pagedProducts
             });
         }
 
