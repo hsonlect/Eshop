@@ -32,13 +32,13 @@ namespace EshopApi.Presentation.Controllers
         // }
 
         [HttpGet("getProduct")]
-        public async Task<IActionResult> GetProduct([FromQuery] int? pageId = null, [FromQuery] int? pageSize = null)
+        public async Task<IActionResult> GetProduct([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
             var products = await _productService.GetAllProductsAsync() ?? [];
-            if (pageId.HasValue && pageSize.HasValue)
+            if (pageNumber.HasValue && pageSize.HasValue)
             {
                 var pagedProducts = products
-                    .Skip((pageId.Value - 1) * pageSize.Value)
+                    .Skip((pageNumber.Value - 1) * pageSize.Value)
                     .Take(pageSize.Value)
                     .ToList();
                 return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
