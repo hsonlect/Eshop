@@ -37,6 +37,9 @@ namespace EshopApi.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId", "ProductId")
+                        .IsUnique();
+
                     b.ToTable("CartItems");
                 });
 
@@ -61,6 +64,9 @@ namespace EshopApi.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });
