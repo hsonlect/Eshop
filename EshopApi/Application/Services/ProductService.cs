@@ -43,6 +43,12 @@ namespace EshopApi.Application.Services
             return (product != null) ? ToProductDTO(product) : null;
         }
 
+        public async Task<ICollection<ProductDTO>?> GetProductByPageAsync(int pageNumber, int pageSize)
+        {
+            var products = await _productRepository.GetByPageAsync(pageNumber, pageSize);
+            return products?.Select(ToProductDTO).ToList();
+        }
+
         public async Task<ProductDTO?> AddNewProductAsync(ProductNewDTO productNewDto)
         {
             var addedProduct = new Product

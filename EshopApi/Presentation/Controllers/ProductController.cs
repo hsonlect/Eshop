@@ -34,13 +34,17 @@ namespace EshopApi.Presentation.Controllers
         [HttpGet("getProduct")]
         public async Task<IActionResult> GetProduct([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
-            var products = await _productService.GetAllProductsAsync() ?? [];
             if (pageNumber.HasValue && pageSize.HasValue)
             {
-                var pagedProducts = products
-                    .Skip((pageNumber.Value - 1) * pageSize.Value)
-                    .Take(pageSize.Value)
-                    .ToList();
+                if (pageNumber <= 0 || pageSize <= 0)
+                {
+                    return BadRequest(new ResponseWrapperDTO<string>()
+                    {
+                        Status = false,
+                        Message = "Page number and page size must be greater than zero"
+                    });
+                }
+                var pagedProducts = await _productService.GetProductByPageAsync(pageNumber.Value, pageSize.Value);
                 return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
                 {
                     Status = true,
@@ -48,6 +52,7 @@ namespace EshopApi.Presentation.Controllers
                     Data = pagedProducts
                 });
             }
+            var products = await _productService.GetAllProductsAsync();
             return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
             {
                 Status = true,

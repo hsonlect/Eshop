@@ -28,6 +28,13 @@ namespace EshopApi.Infrastructure.Repositories
             return await _context.Products.FirstOrDefaultAsync(p => p.Name == name);
         }
 
+        public async Task<ICollection<Product>?> GetByPageAsync(int pageNumber, int pageSize)
+        {
+            return await _context.Products.Skip((pageNumber - 1) * pageSize)
+                                          .Take(pageSize)
+                                          .ToListAsync();
+        }
+
         public async Task<Product?> AddAsync(Product product)
         {
             _context.Products.Add(product);
