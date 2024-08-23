@@ -7,8 +7,7 @@ namespace EshopApi.Application.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _productRepository;
-
+        private readonly IUnitOfWork _unitOfWork;
         private ProductDTO ToProductDTO(Product product)
         {
             return new ProductDTO
@@ -20,32 +19,32 @@ namespace EshopApi.Application.Services
             };
         }
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(IUnitOfWork unitOfWork)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ICollection<ProductDTO>?> GetAllProductsAsync()
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _unitOfWork.ProductRepository.GetAllAsync();
             return products?.Select(ToProductDTO).ToList();
         }
 
         public async Task<ProductDTO?> GetProductByIdAsync(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
             return (product != null) ? ToProductDTO(product) : null;
         }
 
         public async Task<ProductDTO?> GetProductByNameAsync(string name)
         {
-            var product = await _productRepository.GetByNameAsync(name);
+            var product = await _unitOfWork.ProductRepository.GetByNameAsync(name);
             return (product != null) ? ToProductDTO(product) : null;
         }
 
         public async Task<ICollection<ProductDTO>?> GetProductByPageAsync(int pageNumber, int pageSize)
         {
-            var products = await _productRepository.GetByPageAsync(pageNumber, pageSize);
+            var products = await _unitOfWork.ProductRepository.GetByPageAsync(pageNumber, pageSize);
             return products?.Select(ToProductDTO).ToList();
         }
 
@@ -57,13 +56,13 @@ namespace EshopApi.Application.Services
                 Price = productNewDto.Price,
                 Description = productNewDto.Description
             };
-            addedProduct = await _productRepository.AddAsync(addedProduct);
+            addedProduct = await _unitOfWork.ProductRepository.AddAsync(addedProduct);
             return (addedProduct != null) ? ToProductDTO(addedProduct) : null;
         }
 
         public async Task<ProductDTO?> UpdateProductAsync(ProductDTO productDto)
         {
-            var updatedProduct = await _productRepository.GetByIdAsync(productDto.Id);
+            var updatedProduct = await _unitOfWork.ProductRepository.GetByIdAsync(productDto.Id);
             if (updatedProduct == null)
             {
                 return null;
@@ -71,13 +70,13 @@ namespace EshopApi.Application.Services
             updatedProduct.Name = productDto.Name;
             updatedProduct.Price = productDto.Price;
             updatedProduct.Description = productDto.Description;
-            updatedProduct = await _productRepository.UpdateAsync(updatedProduct);
+            updatedProduct = await _unitOfWork.ProductRepository.UpdateAsync(updatedProduct);
             return (updatedProduct != null) ? ToProductDTO(updatedProduct) : null;
         }
 
         public async Task<bool> DeleteProductAsync(int id)
         {
-            return await _productRepository.DeleteAsync(id);
+            return await _unitOfWork.ProductRepository.DeleteAsync(id);
         }
     }
 }
