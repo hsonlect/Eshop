@@ -56,8 +56,20 @@ namespace EshopApi.Application.Services
                 Price = productNewDto.Price,
                 Description = productNewDto.Description
             };
-            addedProduct = await _unitOfWork.ProductRepository.AddAsync(addedProduct);
-            return (addedProduct != null) ? ToProductDTO(addedProduct) : null;
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await _unitOfWork.ExecuteTransactionAsync(async () =>
+                {
+                    addedProduct = await _unitOfWork.ProductRepository.AddAsync(addedProduct);
+                }, cts.Token);
+                return ToProductDTO(addedProduct);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public async Task<ProductDTO?> UpdateProductAsync(ProductDTO productDto)
@@ -70,13 +82,38 @@ namespace EshopApi.Application.Services
             updatedProduct.Name = productDto.Name;
             updatedProduct.Price = productDto.Price;
             updatedProduct.Description = productDto.Description;
-            updatedProduct = await _unitOfWork.ProductRepository.UpdateAsync(updatedProduct);
-            return (updatedProduct != null) ? ToProductDTO(updatedProduct) : null;
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await _unitOfWork.ExecuteTransactionAsync(async () =>
+                {
+                    updatedProduct = await _unitOfWork.ProductRepository.UpdateAsync(updatedProduct);
+                }, cts.Token);
+                return ToProductDTO(updatedProduct);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public async Task<bool> DeleteProductAsync(int id)
         {
-            return await _unitOfWork.ProductRepository.DeleteAsync(id);
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await _unitOfWork.ExecuteTransactionAsync(async () =>
+                {
+                    await _unitOfWork.ProductRepository.DeleteAsync(id);
+                }, cts.Token);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
     }
 }

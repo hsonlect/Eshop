@@ -9,22 +9,22 @@ namespace EshopApi.Infrastructure.Repositories
         private readonly EshopDbContext _context;
         private IDbContextTransaction? _transaction;
         private bool _disposed = false;
-
-        public UnitOfWork(EshopDbContext context)
+        public UnitOfWork(EshopDbContext context,
+                          IUserRepository userRepository,
+                          IProductRepository productRepository,
+                          ICartItemRepository cartItemRepository)
         {
             _context = context;
-            UserRepository = new UserRepository(_context);
-            ProductRepository = new ProductRepository(_context);
-            CartItemRepository = new CartItemRepository(_context);
+            UserRepository = userRepository;
+            ProductRepository = productRepository;
+            CartItemRepository = cartItemRepository;
         }
-
         public IUserRepository UserRepository { get; }
         public IProductRepository ProductRepository { get; }
         public ICartItemRepository CartItemRepository { get; }
 
-        public int SaveChanges() => _context.SaveChanges();
-
-        public async Task<int> SaveChangesAsync(CancellationToken token) => await _context.SaveChangesAsync(token);
+        // public int SaveChanges() => _context.SaveChanges();
+        // public async Task<int> SaveChangesAsync(CancellationToken token) => await _context.SaveChangesAsync(token);
 
         public void BeginTransaction()
         {
@@ -40,12 +40,19 @@ namespace EshopApi.Infrastructure.Repositories
         {
             if (_transaction == null)
             {
-                throw new Exception("Commit transaction is null");
+                Console.WriteLine("No active transaction to commit");
+                throw new InvalidOperationException("No active transaction to commit");
             }
             try
             {
                 _context.SaveChanges();
                 _transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
+                _transaction.Rollback();
+                throw;
             }
             finally
             {
@@ -58,12 +65,19 @@ namespace EshopApi.Infrastructure.Repositories
         {
             if (_transaction == null)
             {
-                throw new Exception("Commit transaction is null");
+                Console.WriteLine("No active transaction to commit");
+                throw new InvalidOperationException("No active transaction to commit");
             }
             try
             {
                 await _context.SaveChangesAsync(token);
                 await _transaction.CommitAsync(token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
+                await _transaction.RollbackAsync(token);
+                throw;
             }
             finally
             {
@@ -72,27 +86,27 @@ namespace EshopApi.Infrastructure.Repositories
             }
         }
 
-        public void RollbackTransaction()
-        {
-            if (_transaction == null)
-            {
-                throw new Exception("Rollback transaction is null");
-            }
-            _transaction.Rollback();
-            _transaction.Dispose();
-            _transaction = null;
-        }
+        // public void RollbackTransaction()
+        // {
+        //     if (_transaction == null)
+        //     {
+        //         throw new InvalidOperationException("No active transaction to rollback");
+        //     }
+        //     _transaction.Rollback();
+        //     _transaction.Dispose();
+        //     _transaction = null;
+        // }
 
-        public async Task RollbackTransactionAsync(CancellationToken token)
-        {
-            if (_transaction == null)
-            {
-                throw new Exception("Rollback transaction is null");
-            }
-            await _transaction.RollbackAsync(token);
-            await _transaction.DisposeAsync();
-            _transaction = null;
-        }
+        // public async Task RollbackTransactionAsync(CancellationToken token)
+        // {
+        //     if (_transaction == null)
+        //     {
+        //         throw new InvalidOperationException("No active transaction to rollback");
+        //     }
+        //     await _transaction.RollbackAsync(token);
+        //     await _transaction.DisposeAsync();
+        //     _transaction = null;
+        // }
 
         public async Task ExecuteTransactionAsync(Action action, CancellationToken token)
         {
@@ -103,8 +117,9 @@ namespace EshopApi.Infrastructure.Repositories
                 await _context.SaveChangesAsync(token);
                 await transaction.CommitAsync(token);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
                 await transaction.RollbackAsync(token);
                 throw;
             }
@@ -119,8 +134,9 @@ namespace EshopApi.Infrastructure.Repositories
                 await _context.SaveChangesAsync(token);
                 await transaction.CommitAsync(token);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
                 await transaction.RollbackAsync(token);
                 throw;
             }

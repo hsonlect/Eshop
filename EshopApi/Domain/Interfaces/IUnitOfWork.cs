@@ -6,8 +6,8 @@ namespace EshopApi.Domain.Interfaces
         IProductRepository ProductRepository { get; }
         ICartItemRepository CartItemRepository { get; }
 
-        int SaveChanges();
-        Task<int> SaveChangesAsync(CancellationToken token);
+        // int SaveChanges();
+        // Task<int> SaveChangesAsync(CancellationToken token);
 
         void BeginTransaction();
         Task BeginTransactionAsync(CancellationToken token);
@@ -15,8 +15,8 @@ namespace EshopApi.Domain.Interfaces
         void CommitTransaction();
         Task CommitTransactionAsync(CancellationToken token);
 
-        void RollbackTransaction();
-        Task RollbackTransactionAsync(CancellationToken token);
+        // void RollbackTransaction();
+        // Task RollbackTransactionAsync(CancellationToken token);
 
         Task ExecuteTransactionAsync(Action action, CancellationToken token);
         Task ExecuteTransactionAsync(Func<Task> action, CancellationToken token);

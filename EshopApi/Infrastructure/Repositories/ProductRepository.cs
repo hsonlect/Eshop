@@ -30,16 +30,16 @@ namespace EshopApi.Infrastructure.Repositories
 
         public async Task<ICollection<Product>?> GetByPageAsync(int pageNumber, int pageSize)
         {
-            return await _context.Products.Skip((pageNumber - 1) * pageSize)
+            return await _context.Products.OrderBy(p => p.Id)
+                                          .Skip((pageNumber - 1) * pageSize)
                                           .Take(pageSize)
                                           .ToListAsync();
         }
 
-        public async Task<Product?> AddAsync(Product product)
+        public async Task<Product> AddAsync(Product product)
         {
-            _context.Products.Add(product);
-            var result = await _context.SaveChangesAsync();
-            return (result > 0) ? product : null;
+            await _context.Products.AddAsync(product);
+            return product;
         }
 
         public async Task<Product?> UpdateAsync(Product product)
@@ -52,8 +52,7 @@ namespace EshopApi.Infrastructure.Repositories
             updatedProduct.Name = product.Name;
             updatedProduct.Price = product.Price;
             updatedProduct.Description = product.Description;
-            var result = await _context.SaveChangesAsync();
-            return (result > 0) ? updatedProduct : null;
+            return updatedProduct;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -64,8 +63,7 @@ namespace EshopApi.Infrastructure.Repositories
                 return false;
             }
             _context.Products.Remove(removedProduct);
-            var result = await _context.SaveChangesAsync();
-            return result > 0;
+            return true;
         }
     }
 }

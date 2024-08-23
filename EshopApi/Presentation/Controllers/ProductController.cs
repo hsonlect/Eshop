@@ -19,18 +19,6 @@ namespace EshopApi.Presentation.Controllers
             _productService = productService;
         }
 
-        // [HttpGet("getProduct")]
-        // public async Task<IActionResult> GetProduct()
-        // {
-        //     var products = await _productService.GetAllProductsAsync();
-        //     return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
-        //     {
-        //         Status = true,
-        //         Message = "Get all products successfully!!!",
-        //         Data = products
-        //     });
-        // }
-
         [HttpGet("getProduct")]
         public async Task<IActionResult> GetProduct([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
         {
@@ -48,7 +36,7 @@ namespace EshopApi.Presentation.Controllers
                 return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
                 {
                     Status = true,
-                    Message = "Get product by page id successfully!!!",
+                    Message = "Get product by page number and page size successfully!!!",
                     Data = pagedProducts
                 });
             }
@@ -85,11 +73,7 @@ namespace EshopApi.Presentation.Controllers
         public async Task<IActionResult> GetProductByPage(int pageId)
         {
             const int pageSize = 5;
-            var products = await _productService.GetAllProductsAsync() ?? [];
-            var pagedProducts = products
-                .Skip((pageId - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+            var pagedProducts = await _productService.GetProductByPageAsync(pageId, pageSize);
             return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
             {
                 Status = true,
