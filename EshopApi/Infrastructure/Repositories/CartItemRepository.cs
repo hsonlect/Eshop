@@ -33,11 +33,10 @@ namespace EshopApi.Infrastructure.Repositories
             return await _context.CartItems.Where(ci => ci.UserId == userId && ci.ProductId == productId).FirstOrDefaultAsync();
         }
 
-        public async Task<CartItem?> AddAsync(CartItem cartItem)
+        public async Task<CartItem> AddAsync(CartItem cartItem)
         {
-            _context.CartItems.Add(cartItem);
-            var result = await _context.SaveChangesAsync();
-            return (result > 0) ? cartItem : null;
+            await _context.CartItems.AddAsync(cartItem);
+            return cartItem;
         }
 
         public async Task<CartItem?> UpdateAsync(CartItem cartItem)
@@ -49,8 +48,7 @@ namespace EshopApi.Infrastructure.Repositories
             }
             updatedCartItem.UserId = cartItem.UserId;
             updatedCartItem.ProductId = cartItem.ProductId;
-            var result = await _context.SaveChangesAsync();
-            return (result > 0) ? updatedCartItem : null;
+            return updatedCartItem;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -61,8 +59,7 @@ namespace EshopApi.Infrastructure.Repositories
                 return false;
             }
             _context.CartItems.Remove(removedCartItem);
-            var result = await _context.SaveChangesAsync();
-            return result > 0;
+            return true;
         }
     }
 }

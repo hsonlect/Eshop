@@ -7,7 +7,7 @@ namespace EshopApi.Application.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         private UserDTO ToUserDTO(User user)
         {
@@ -19,32 +19,32 @@ namespace EshopApi.Application.Services
             };
         }
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ICollection<UserDTO>?> GetAllUsersAsync()
         {
-            var users = await _userRepository.GetAllAsync();
+            var users = await _unitOfWork.UserRepository.GetAllAsync();
             return users?.Select(ToUserDTO).ToList();
         }
 
         public async Task<UserDTO?> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
             return (user != null) ? ToUserDTO(user) : null;
         }
 
         public async Task<UserDTO?> GetUserByUsernameAsync(string username)
         {
-            var user = await _userRepository.GetByUsernameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(username);
             return (user != null) ? ToUserDTO(user) : null;
         }
 
         public async Task<UserDTO?> GetUserByUsernameAndPasswordAsync(string username, string password)
         {
-            var user = await _userRepository.GetByUsernameAsync(username);
+            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(username);
             if ((user == null) || (user.Password != password))
             {
                 return null;
@@ -60,38 +60,87 @@ namespace EshopApi.Application.Services
                 Role = userNewDto.Role,
                 Password = userNewDto.Password
             };
-            addedUser = await _userRepository.AddAsync(addedUser);
-            return (addedUser != null) ? ToUserDTO(addedUser) : null;
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await _unitOfWork.ExecuteTransactionAsync(async () =>
+                {
+                    addedUser = await _unitOfWork.UserRepository.AddAsync(addedUser);
+                }, cts.Token);
+                return ToUserDTO(addedUser);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<UserDTO?> UpdateUserAsync(UserDTO userDto)
         {
-            var updatedUser = await _userRepository.GetByIdAsync(userDto.Id);
+            var updatedUser = await _unitOfWork.UserRepository.GetByIdAsync(userDto.Id);
             if (updatedUser == null)
             {
                 return null;
             }
             updatedUser.Username = userDto.Username;
             updatedUser.Role = userDto.Role;
-            updatedUser = await _userRepository.UpdateAsync(updatedUser);
-            return (updatedUser != null) ? ToUserDTO(updatedUser) : null;
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await _unitOfWork.ExecuteTransactionAsync(async () =>
+                {
+                    updatedUser = await _unitOfWork.UserRepository.UpdateAsync(updatedUser);
+                }, cts.Token);
+                return ToUserDTO(updatedUser);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<UserDTO?> UpdateUserPasswordAsync(int id, string password)
         {
-            var updatedUser = await _userRepository.GetByIdAsync(id);
+            var updatedUser = await _unitOfWork.UserRepository.GetByIdAsync(id);
             if (updatedUser == null)
             {
                 return null;
             }
             updatedUser.Password = password;
-            updatedUser = await _userRepository.UpdateAsync(updatedUser);
-            return (updatedUser != null) ? ToUserDTO(updatedUser) : null;
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await _unitOfWork.ExecuteTransactionAsync(async () =>
+                {
+                    updatedUser = await _unitOfWork.UserRepository.UpdateAsync(updatedUser);
+                }, cts.Token);
+                return ToUserDTO(updatedUser);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            return await _userRepository.DeleteAsync(id);
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await _unitOfWork.ExecuteTransactionAsync(async () =>
+                {
+                    await _unitOfWork.UserRepository.DeleteAsync(id);
+                }, cts.Token);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Transaction failed: {ex.Message}");
+                return false;
+            }
         }
     }
 }

@@ -67,7 +67,7 @@ namespace EshopApi.Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Transaction failed: {ex.Message}");
                 return null;
             }
         }
@@ -93,7 +93,7 @@ namespace EshopApi.Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Transaction failed: {ex.Message}");
                 return null;
             }
         }
@@ -111,7 +111,7 @@ namespace EshopApi.Application.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Transaction failed: {ex.Message}");
                 return false;
             }
         }

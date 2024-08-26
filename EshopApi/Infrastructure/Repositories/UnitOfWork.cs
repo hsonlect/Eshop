@@ -38,9 +38,8 @@ namespace EshopApi.Infrastructure.Repositories
 
         public void CommitTransaction()
         {
-            if (_transaction == null)
+            if (_transaction is null)
             {
-                Console.WriteLine("No active transaction to commit");
                 throw new InvalidOperationException("No active transaction to commit");
             }
             try
@@ -48,9 +47,8 @@ namespace EshopApi.Infrastructure.Repositories
                 _context.SaveChanges();
                 _transaction.Commit();
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Transaction failed: {ex.Message}");
                 _transaction.Rollback();
                 throw;
             }
@@ -63,9 +61,8 @@ namespace EshopApi.Infrastructure.Repositories
 
         public async Task CommitTransactionAsync(CancellationToken token)
         {
-            if (_transaction == null)
+            if (_transaction is null)
             {
-                Console.WriteLine("No active transaction to commit");
                 throw new InvalidOperationException("No active transaction to commit");
             }
             try
@@ -73,9 +70,8 @@ namespace EshopApi.Infrastructure.Repositories
                 await _context.SaveChangesAsync(token);
                 await _transaction.CommitAsync(token);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Transaction failed: {ex.Message}");
                 await _transaction.RollbackAsync(token);
                 throw;
             }
@@ -117,9 +113,8 @@ namespace EshopApi.Infrastructure.Repositories
                 await _context.SaveChangesAsync(token);
                 await transaction.CommitAsync(token);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Transaction failed: {ex.Message}");
                 await transaction.RollbackAsync(token);
                 throw;
             }
@@ -134,9 +129,8 @@ namespace EshopApi.Infrastructure.Repositories
                 await _context.SaveChangesAsync(token);
                 await transaction.CommitAsync(token);
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"Transaction failed: {ex.Message}");
                 await transaction.RollbackAsync(token);
                 throw;
             }

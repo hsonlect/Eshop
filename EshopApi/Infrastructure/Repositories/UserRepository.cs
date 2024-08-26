@@ -28,11 +28,10 @@ namespace EshopApi.Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
 
-        public async Task<User?> AddAsync(User user)
+        public async Task<User> AddAsync(User user)
         {
-            _context.Users.Add(user);
-            var result = await _context.SaveChangesAsync();
-            return (result > 0) ? user : null;
+            await _context.Users.AddAsync(user);
+            return user;
         }
 
         public async Task<User?> UpdateAsync(User user)
@@ -45,8 +44,7 @@ namespace EshopApi.Infrastructure.Repositories
             updatedUser.Username = user.Username;
             updatedUser.Role = user.Role;
             updatedUser.Password = user.Password;
-            var result = await _context.SaveChangesAsync();
-            return (result > 0) ? updatedUser : null;
+            return updatedUser;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -57,8 +55,7 @@ namespace EshopApi.Infrastructure.Repositories
                 return false;
             }
             _context.Users.Remove(removedUser);
-            var result = await _context.SaveChangesAsync();
-            return result > 0;
+            return true;
         }
     }
 }

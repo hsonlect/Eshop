@@ -7,7 +7,7 @@ namespace EshopApi.Domain.Interfaces
         Task<ICollection<User>?> GetAllAsync();
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByUsernameAsync(string username);
-        Task<User?> AddAsync(User user);
+        Task<User> AddAsync(User user);
         Task<User?> UpdateAsync(User user);
         Task<bool> DeleteAsync(int id);
     }
