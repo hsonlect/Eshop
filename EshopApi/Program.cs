@@ -9,6 +9,7 @@ using EshopApi.Infrastructure.Data;
 using EshopApi.Infrastructure.Repositories;
 using EshopApi.Application.Interfaces;
 using EshopApi.Application.Services;
+using EshopApi.Presentation.Middlewares;
 
 
 
@@ -115,6 +116,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCors(AllowedOrigins);
 app.UseHttpsRedirection();
 app.UseAuthentication();
