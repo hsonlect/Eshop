@@ -83,7 +83,7 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpPost("addProduct")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerPermission")]
         public async Task<IActionResult> AddProduct(ProductNewDTO productNewDto)
         {
             var addedProduct = await _productService.AddNewProductAsync(productNewDto);
@@ -104,7 +104,7 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpPut("updateProduct")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerPermission")]
         public async Task<IActionResult> UpdateProduct(ProductDTO productDto)
         {
             var updatedProduct = await _productService.UpdateProductAsync(productDto);
@@ -126,7 +126,7 @@ namespace EshopApi.Presentation.Controllers
 
         [HttpPut("updateProduct/{id}")]
         [MapToApiVersion("2.0")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerPermission")]
         public async Task<IActionResult> UpdateProduct(int id, ProductDTO productDto)
         {
             if ((id == 0) || (productDto.Id == 0) || (id != productDto.Id))
@@ -155,7 +155,7 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpDelete("deleteProduct/{id}")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerPermission")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var result = await _productService.DeleteProductAsync(id);

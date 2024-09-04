@@ -11,7 +11,7 @@ namespace EshopApi.Presentation.Controllers
     [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}")]
     // [Authorize(Roles = "admin")]
-    [Authorize(Policy = "RequireAdminRole")]
+    [Authorize(Policy = "RequireAdminPermission")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;

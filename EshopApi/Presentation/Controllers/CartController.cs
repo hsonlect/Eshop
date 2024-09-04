@@ -11,7 +11,7 @@ namespace EshopApi.Presentation.Controllers
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}")]
-    [Authorize]
+    [Authorize(Policy = "RequireUserPermission")]
     public class CartController : ControllerBase
     {
         private readonly IUserService _userservice;
@@ -67,7 +67,7 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpGet("getCart/{userId}")]
-        [Authorize(Policy = "RequireAdminRole")]
+        [Authorize(Policy = "RequireManagerPermission")]
         public async Task<IActionResult> GetCart(int userId)
         {
             var cartItems = await _cartService.GetCartItemByUserIdAsync(userId);

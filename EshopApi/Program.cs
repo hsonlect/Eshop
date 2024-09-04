@@ -51,11 +51,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 // builder.Services.AddAuthorizationBuilder()
-//     .AddPolicy("RequireAdminRole", policy => policy.RequireClaim(ClaimTypes.Role, "admin"))
-//     .AddPolicy("RequireUserRole", policy => policy.RequireClaim(ClaimTypes.Role, "user", "admin"));
+//     .AddPolicy("RequireAdminPermission", policy => policy.RequireClaim(ClaimTypes.Role, "admin"))
+//     .AddPolicy("RequireManagerPermission", policy => policy.RequireClaim(ClaimTypes.Role, "manager", "admin"))
+//     .AddPolicy("RequireUserPermission", policy => policy.RequireClaim(ClaimTypes.Role, "user", "manager", "admin"));
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"))
-    .AddPolicy("RequireUserRole", policy => policy.RequireRole("user", "admin"));
+    .AddPolicy("RequireAdminPermission", policy => policy.RequireRole("admin"))
+    .AddPolicy("RequireManagerPermission", policy => policy.RequireRole("manager", "admin"))
+    .AddPolicy("RequireUserPermission", policy => policy.RequireRole("user", "manager", "admin"));
 
 
 
