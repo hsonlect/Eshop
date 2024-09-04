@@ -25,7 +25,6 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpGet("getCart")]
-        [Authorize(Roles = "user")]
         public async Task<IActionResult> GetCart()
         {
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
@@ -68,7 +67,7 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpGet("getCart/{userId}")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> GetCart(int userId)
         {
             var cartItems = await _cartService.GetCartItemByUserIdAsync(userId);
@@ -81,7 +80,6 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpPost("addToCart")]
-        [Authorize(Roles = "user")]
         public async Task<IActionResult> AddToCart(AddToCartReqDTO requestDto)
         {
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
@@ -123,7 +121,6 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpPost("removeFromCart")]
-        [Authorize(Roles = "user")]
         public async Task<IActionResult> RemoveFromCart(RemoveFromCartReqDTO requestDto)
         {
             var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;

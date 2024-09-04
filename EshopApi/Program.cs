@@ -50,9 +50,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
+// builder.Services.AddAuthorizationBuilder()
+//     .AddPolicy("RequireAdminRole", policy => policy.RequireClaim(ClaimTypes.Role, "admin"))
+//     .AddPolicy("RequireUserRole", policy => policy.RequireClaim(ClaimTypes.Role, "user", "admin"));
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("UserPolicy", policy => policy.RequireClaim(ClaimTypes.Role, "user"))
-    .AddPolicy("AdminPolicy", policy => policy.RequireClaim(ClaimTypes.Role, "admin"));
+    .AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"))
+    .AddPolicy("RequireUserRole", policy => policy.RequireRole("user", "admin"));
 
 
 

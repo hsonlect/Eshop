@@ -42,7 +42,7 @@ namespace EshopApi.Presentation.Controllers
             {
                 AllowRefresh = false,
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
-                IsPersistent = true,
+                IsPersistent = true // IsPersistent = requestDto.IsRememberMe
             };
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authProperties);
             return Ok(new ResponseWrapperDTO<LoginRespDTO>
