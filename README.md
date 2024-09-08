@@ -43,3 +43,6 @@ dotnet test
 
 ## TODO
 - [ ] Filter
+- [ ] SessionID
+- [ ] Hash password
+- [ ] 
