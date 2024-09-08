@@ -11,12 +11,10 @@ namespace EshopApi.Domain.Interfaces
 
         void BeginTransaction();
         Task BeginTransactionAsync(CancellationToken token);
-
         void CommitTransaction();
         Task CommitTransactionAsync(CancellationToken token);
-
-        // void RollbackTransaction();
-        // Task RollbackTransactionAsync(CancellationToken token);
+        void RollbackTransaction();
+        Task RollbackTransactionAsync(CancellationToken token);
 
         Task ExecuteTransactionAsync(Action action, CancellationToken token);
         Task ExecuteTransactionAsync(Func<Task> action, CancellationToken token);

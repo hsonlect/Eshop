@@ -1,6 +1,5 @@
 using DotNetEnv;
 using Asp.Versioning;
-using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;

@@ -82,27 +82,27 @@ namespace EshopApi.Infrastructure.Repositories
             }
         }
 
-        // public void RollbackTransaction()
-        // {
-        //     if (_transaction == null)
-        //     {
-        //         throw new InvalidOperationException("No active transaction to rollback");
-        //     }
-        //     _transaction.Rollback();
-        //     _transaction.Dispose();
-        //     _transaction = null;
-        // }
+        public void RollbackTransaction()
+        {
+            if (_transaction is null)
+            {
+                throw new InvalidOperationException("No active transaction to rollback");
+            }
+            _transaction.Rollback();
+            _transaction.Dispose();
+            _transaction = null;
+        }
 
-        // public async Task RollbackTransactionAsync(CancellationToken token)
-        // {
-        //     if (_transaction == null)
-        //     {
-        //         throw new InvalidOperationException("No active transaction to rollback");
-        //     }
-        //     await _transaction.RollbackAsync(token);
-        //     await _transaction.DisposeAsync();
-        //     _transaction = null;
-        // }
+        public async Task RollbackTransactionAsync(CancellationToken token)
+        {
+            if (_transaction is null)
+            {
+                throw new InvalidOperationException("No active transaction to rollback");
+            }
+            await _transaction.RollbackAsync(token);
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
 
         public async Task ExecuteTransactionAsync(Action action, CancellationToken token)
         {
