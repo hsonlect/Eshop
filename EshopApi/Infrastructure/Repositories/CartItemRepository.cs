@@ -13,6 +13,11 @@ namespace EshopApi.Infrastructure.Repositories
             _context = context;
         }
 
+        public IQueryable<CartItem> AsQueryable()
+        {
+            return _context.CartItems.AsQueryable();
+        }
+
         public async Task<ICollection<CartItem>?> GetAllAsync()
         {
             return await _context.CartItems.ToListAsync();

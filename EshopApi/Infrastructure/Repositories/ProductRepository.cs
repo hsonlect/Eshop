@@ -13,6 +13,11 @@ namespace EshopApi.Infrastructure.Repositories
             _context = context;
         }
 
+        public IQueryable<Product> AsQueryable()
+        {
+            return _context.Products.AsQueryable();
+        }
+
         public async Task<ICollection<Product>?> GetAllAsync()
         {
             return await _context.Products.ToListAsync();
@@ -26,14 +31,6 @@ namespace EshopApi.Infrastructure.Repositories
         public async Task<Product?> GetByNameAsync(string name)
         {
             return await _context.Products.FirstOrDefaultAsync(p => p.Name == name);
-        }
-
-        public async Task<ICollection<Product>?> GetByPageAsync(int pageNumber, int pageSize)
-        {
-            return await _context.Products.OrderBy(p => p.Id)
-                                          .Skip((pageNumber - 1) * pageSize)
-                                          .Take(pageSize)
-                                          .ToListAsync();
         }
 
         public async Task<Product> AddAsync(Product product)

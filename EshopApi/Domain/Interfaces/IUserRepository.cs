@@ -4,6 +4,7 @@ namespace EshopApi.Domain.Interfaces
 {
     public interface IUserRepository
     {
+        IQueryable<User> AsQueryable();
         Task<ICollection<User>?> GetAllAsync();
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByUsernameAsync(string username);

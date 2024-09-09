@@ -13,6 +13,11 @@ namespace EshopApi.Infrastructure.Repositories
             _context = context;
         }
 
+        public IQueryable<User> AsQueryable()
+        {
+            return _context.Users.AsQueryable();
+        }
+
         public async Task<ICollection<User>?> GetAllAsync()
         {
             return await _context.Users.ToListAsync();

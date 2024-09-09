@@ -4,6 +4,7 @@ namespace EshopApi.Domain.Interfaces
 {
     public interface ICartItemRepository
     {
+        IQueryable<CartItem> AsQueryable();
         Task<ICollection<CartItem>?> GetAllAsync();
         Task<CartItem?> GetByIdAsync(int id);
         Task<ICollection<CartItem>?> GetByUserIdAsync(int userId);

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using EshopApi.Domain.Entities;
 using EshopApi.Domain.DTOs;
 using EshopApi.Domain.Interfaces;
@@ -44,7 +45,11 @@ namespace EshopApi.Application.Services
 
         public async Task<ICollection<ProductDTO>?> GetProductByPageAsync(int pageNumber, int pageSize)
         {
-            var products = await _unitOfWork.ProductRepository.GetByPageAsync(pageNumber, pageSize);
+            var products = await _unitOfWork.ProductRepository.AsQueryable()
+                                                              .OrderBy(p => p.Id)
+                                                              .Skip((pageNumber - 1) * pageSize)
+                                                              .Take(pageSize)
+                                                              .ToListAsync();
             return products?.Select(ToProductDTO).ToList();
         }
 
