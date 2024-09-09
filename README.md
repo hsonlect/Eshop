@@ -1,5 +1,5 @@
 
-# Dev's Notes
+# My Notes
 
 ## Setup
 ```bash
