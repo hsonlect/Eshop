@@ -20,27 +20,15 @@ namespace EshopApi.Presentation.Controllers
         }
 
         [HttpGet("getProduct")]
-        public async Task<IActionResult> GetProduct([FromQuery] int? pageNumber = null, [FromQuery] int? pageSize = null)
+        public async Task<IActionResult> GetProduct([FromQuery] string? searchString,
+                                                    [FromQuery] string? sortBy,
+                                                    [FromQuery] string? sortDirection,
+                                                    [FromQuery] long? minPrice,
+                                                    [FromQuery] long? maxPrice,
+                                                    [FromQuery] int? pageNumber,
+                                                    [FromQuery] int? pageSize)
         {
-            if (pageNumber.HasValue && pageSize.HasValue)
-            {
-                if (pageNumber <= 0 || pageSize <= 0)
-                {
-                    return BadRequest(new ResponseWrapperDTO<string>()
-                    {
-                        Status = false,
-                        Message = "Page number and page size must be greater than zero"
-                    });
-                }
-                var pagedProducts = await _productService.GetProductByPageAsync(pageNumber.Value, pageSize.Value);
-                return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
-                {
-                    Status = true,
-                    Message = "Get product by page number and page size successfully!!!",
-                    Data = pagedProducts
-                });
-            }
-            var products = await _productService.GetAllProductsAsync();
+            var products = await _productService.GetProductsAsync(searchString, sortBy, sortDirection, minPrice, maxPrice, pageNumber, pageSize);
             return Ok(new ResponseWrapperDTO<ICollection<ProductDTO>>()
             {
                 Status = true,

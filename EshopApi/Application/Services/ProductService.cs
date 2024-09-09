@@ -31,6 +31,56 @@ namespace EshopApi.Application.Services
             return products?.Select(ToProductDTO).ToList();
         }
 
+        public async Task<ICollection<ProductDTO>?> GetProductsAsync(string? searchString,
+                                                                     string? sortBy,
+                                                                     string? sortDirection,
+                                                                     long? minPrice,
+                                                                     long? maxPrice,
+                                                                     int? pageNumber,
+                                                                     int? pageSize)
+        {
+            var query = _unitOfWork.ProductRepository.AsQueryable();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(p => p.Name.ToLower().Contains(searchString.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                if (string.IsNullOrEmpty(sortDirection))
+                {
+                    sortDirection = "asc";
+                }
+                switch (sortBy.ToLower())
+                {
+                    case "id":
+                        query = (sortDirection == "asc") ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id);
+                        break;
+                    case "name":
+                        query = (sortDirection == "asc") ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name);
+                        break;
+                    case "price":
+                        query = (sortDirection == "asc") ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (minPrice.HasValue && minPrice > 0)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+            if (maxPrice.HasValue && maxPrice > 0)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+            if (pageNumber.HasValue && pageNumber > 0 && pageSize.HasValue && pageSize > 0)
+            {
+                query = query.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value);
+            }
+            var products = await query.ToListAsync();
+            return products.Select(ToProductDTO).ToList();
+        }
+
         public async Task<ProductDTO?> GetProductByIdAsync(int id)
         {
             var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
