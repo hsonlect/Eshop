@@ -23,7 +23,7 @@ namespace EshopApi.Presentation.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginReqDTO requestDto)
         {
-            var user = await _userService.GetUserByUsernameAndPasswordAsync(requestDto.Username, requestDto.Password);
+            var user = await _userService.VerifyUserPasswordAsync(requestDto.Username, requestDto.Password);
             if (user == null)
             {
                 return Unauthorized(new ResponseWrapperDTO<string>

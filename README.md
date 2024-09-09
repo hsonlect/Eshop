@@ -24,6 +24,7 @@ dotnet add package Microsoft.Extensions.Configuration
 dotnet add package Asp.Versioning.Mvc
 dotnet add package Asp.Versioning.Mvc.ApiExplorer
 dotnet add package DotNetEnv
+dotnet add package BCrypt.Net-Next
 # Update code: Domain/Infrastructure/Application/API
 # Follow template https://github.com/nhonvo/clean-architecture-net-8.0
 dotnet tool install --global dotnet-ef
@@ -42,7 +43,4 @@ dotnet test
 ```
 
 ## TODO
-- [ ] Filter
 - [ ] SessionID
-- [ ] Hash password
-- [ ] 

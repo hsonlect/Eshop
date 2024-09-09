@@ -42,23 +42,13 @@ namespace EshopApi.Application.Services
             return (user != null) ? ToUserDTO(user) : null;
         }
 
-        public async Task<UserDTO?> GetUserByUsernameAndPasswordAsync(string username, string password)
-        {
-            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(username);
-            if ((user == null) || (user.Password != password))
-            {
-                return null;
-            }
-            return ToUserDTO(user);
-        }
-
         public async Task<UserDTO?> AddNewUserAsync(UserNewDTO userNewDto)
         {
             var addedUser = new User
             {
                 Username = userNewDto.Username,
                 Role = userNewDto.Role,
-                Password = userNewDto.Password
+                HashedPassword = BCrypt.Net.BCrypt.HashPassword(userNewDto.Password)
             };
             try
             {
@@ -108,7 +98,7 @@ namespace EshopApi.Application.Services
             {
                 return null;
             }
-            updatedUser.Password = password;
+            updatedUser.HashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
             try
             {
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -141,6 +131,16 @@ namespace EshopApi.Application.Services
                 Console.WriteLine($"Transaction failed: {ex.Message}");
                 return false;
             }
+        }
+
+        public async Task<UserDTO?> VerifyUserPasswordAsync(string username, string password)
+        {
+            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(username);
+            if ((user == null) || (user.HashedPassword != BCrypt.Net.BCrypt.HashPassword(password)))
+            {
+                return null;
+            }
+            return ToUserDTO(user);
         }
     }
 }

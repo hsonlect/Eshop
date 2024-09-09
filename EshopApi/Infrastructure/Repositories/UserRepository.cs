@@ -48,7 +48,7 @@ namespace EshopApi.Infrastructure.Repositories
             }
             updatedUser.Username = user.Username;
             updatedUser.Role = user.Role;
-            updatedUser.Password = user.Password;
+            updatedUser.HashedPassword = user.HashedPassword;
             return updatedUser;
         }
 
