@@ -136,7 +136,7 @@ namespace EshopApi.Application.Services
         public async Task<UserDTO?> VerifyUserPasswordAsync(string username, string password)
         {
             var user = await _unitOfWork.UserRepository.GetByUsernameAsync(username);
-            if ((user == null) || (user.HashedPassword != BCrypt.Net.BCrypt.HashPassword(password)))
+            if ((user == null) || !BCrypt.Net.BCrypt.Verify(password, user.HashedPassword))
             {
                 return null;
             }
