@@ -45,3 +45,4 @@ dotnet test
 ## TODO
 - [ ] SessionID
 - [ ] Unit test/ Component test/ Integration test
+- [ ] LinQ, SQL, DB
